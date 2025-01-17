@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public class Laser : MonoBehaviour {
     //Speed variable
+    [SerializeField]
     private float _speedOfLaser = 8.0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {

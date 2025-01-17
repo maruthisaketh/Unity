@@ -4,6 +4,7 @@ public class Player : MonoBehaviour {
     //public or private references
     private float _horizontalInput;
     private float _verticalInput;
+    [SerializeField]
     private float _speedOfPlayer = 3.5f;
 
     [SerializeField]
@@ -12,6 +13,8 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private float _fireRate = 0.2f;
     private float _nextFireTime = 0.0f;
+    [SerializeField]
+    private int _lives = 3;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -52,6 +55,14 @@ public class Player : MonoBehaviour {
         }
         else if (transform.position.x < -11.3f) {
             transform.position = new Vector3(11.3f, transform.position.y, transform.position.z);
+        }
+    }
+
+    public void Damage() {
+        _lives--;
+
+        if (_lives == 0) {
+            Destroy(gameObject);
         }
     }
 }
