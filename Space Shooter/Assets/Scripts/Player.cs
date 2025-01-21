@@ -5,7 +5,7 @@ public class Player : MonoBehaviour {
     private float _horizontalInput;
     private float _verticalInput;
     [SerializeField]
-    private float _speedOfPlayer = 3.5f;
+    private float _speedOfPlayer = 4.5f;
 
     [SerializeField]
     private GameObject _laserPrefab;
@@ -16,11 +16,17 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private int _lives = 3;
 
+    private SpawnManager _spawnManager;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        // Take the current position and Assign a start position(0, 0, 0)
         transform.position = new Vector3(0, 0, 0);
+
+        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
+        if (_spawnManager == null) {
+            Debug.Log("The Spawn Manager is Null");
+        }
     }
 
     // Update is called once per frame
@@ -61,7 +67,9 @@ public class Player : MonoBehaviour {
     public void Damage() {
         _lives--;
 
-        if (_lives == 0) {
+        if (_lives < 1) {
+            //Stop Spawning Enemies and Destroy Player.
+            _spawnManager.OnPlayerDeath();
             Destroy(gameObject);
         }
     }
