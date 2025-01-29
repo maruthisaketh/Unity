@@ -5,7 +5,6 @@ public class Enemy : MonoBehaviour {
     private float _speedOfEnemy = 4.0f;
     private Player _player;
     private Animator _enemyAnimator;
-    private float _enemySlowDownRate = 1.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -39,6 +38,7 @@ public class Enemy : MonoBehaviour {
             }
             _enemyAnimator.SetTrigger("OnEnemyDeath");
             _speedOfEnemy = 0f;
+            gameObject.GetComponent<Collider2D>().enabled = false;
             Destroy(gameObject, 2.5f);
         }
         else if (other.CompareTag("Laser")) {
@@ -48,6 +48,7 @@ public class Enemy : MonoBehaviour {
             Destroy(other.gameObject);
             _enemyAnimator.SetTrigger("OnEnemyDeath");
             _speedOfEnemy = 0f;
+            gameObject.GetComponent<Collider2D>().enabled = false;
             Destroy(gameObject, 2.5f);
         }
     }

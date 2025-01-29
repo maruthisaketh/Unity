@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 public class SpawnManager : MonoBehaviour {
     [SerializeField]
-    private GameObject _enemyPrefab;
+    private GameObject[] _enemiesPrefabs;
 
     [SerializeField]
     private GameObject _enemyContainer;
@@ -21,17 +21,13 @@ public class SpawnManager : MonoBehaviour {
         StartCoroutine(SpawnPowerupRoutine());
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    } 
-
     //Spawn Enemy at random X position every 5 seconds
     IEnumerator SpawnEnemyRoutine() {
         while (_stopSpawning == false) {
             float randX = Random.Range(-9.5f, 9.5f);
             Vector3 positionToSpawn = new(randX, 7.0f, 0);
-            GameObject newEnemy = Instantiate(_enemyPrefab, positionToSpawn, Quaternion.identity);
+            int randomEnemy = Random.Range(0, 2);
+            GameObject newEnemy = Instantiate(_enemiesPrefabs[randomEnemy], positionToSpawn, Quaternion.identity);
             newEnemy.transform.parent = _enemyContainer.transform;
             yield return new WaitForSeconds(2.5f);
         }
