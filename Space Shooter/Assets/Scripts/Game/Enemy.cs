@@ -1,13 +1,24 @@
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
     [SerializeField]
     private float _speedOfEnemy = 4.0f;
+    private Player _player;
+    private Animator _enemyAnimator;
+    private float _enemySlowDownRate = 1.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        _enemyAnimator = gameObject.GetComponent<Animator>();
 
+        if (_player == null) {
+            Debug.LogError("Enemy.cs::Start() - Player Game Object not Found");
+        }
+
+        if (_enemyAnimator == null) {
+            Debug.LogError("Enemy.cs::Start() - Enemy Animator Component Not Found");
+        }
     }
 
     // Update is called once per frame
@@ -26,11 +37,18 @@ public class Enemy : MonoBehaviour {
             if (player != null) {
                 player.Damage();
             }
-            Destroy(gameObject);
+            _enemyAnimator.SetTrigger("OnEnemyDeath");
+            _speedOfEnemy = 0f;
+            Destroy(gameObject, 2.5f);
         }
         else if (other.CompareTag("Laser")) {
+            if (_player != null) {
+                _player.AddScore(10);
+            }
             Destroy(other.gameObject);
-            Destroy(gameObject);
+            _enemyAnimator.SetTrigger("OnEnemyDeath");
+            _speedOfEnemy = 0f;
+            Destroy(gameObject, 2.5f);
         }
     }
 }
