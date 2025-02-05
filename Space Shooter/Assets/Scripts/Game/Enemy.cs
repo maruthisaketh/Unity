@@ -4,12 +4,19 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     private float _speedOfEnemy = 4.0f;
     private Player _player;
+
+    [SerializeField]
+    private GameObject _enemyLaserPrefab;
     private Animator _enemyAnimator;
+    private AudioSource _audioSource;
+    private AudioClip _explosionAudio;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         _player = GameObject.Find("Player").GetComponent<Player>();
         _enemyAnimator = gameObject.GetComponent<Animator>();
+        _audioSource = gameObject.GetComponent<AudioSource>();
+        _explosionAudio = Resources.Load<AudioClip>("Audio/explosion_sound");
 
         if (_player == null) {
             Debug.LogError("Enemy.cs::Start() - Player Game Object not Found");
@@ -17,6 +24,17 @@ public class Enemy : MonoBehaviour {
 
         if (_enemyAnimator == null) {
             Debug.LogError("Enemy.cs::Start() - Enemy Animator Component Not Found");
+        }
+
+        if (_explosionAudio == null) {
+            Debug.LogError("Enemy.cs::Start() - Explosion Sound Not Found");
+        }
+
+        if (_audioSource != null) {
+            _audioSource.clip = _explosionAudio;
+        }
+        else {
+            Debug.LogError("Enemy.cs::Start() - Audio Source for Enemy Not Found.");
         }
     }
 
@@ -39,6 +57,7 @@ public class Enemy : MonoBehaviour {
             _enemyAnimator.SetTrigger("OnEnemyDeath");
             _speedOfEnemy = 0f;
             gameObject.GetComponent<Collider2D>().enabled = false;
+            _audioSource.Play();
             Destroy(gameObject, 2.5f);
         }
         else if (other.CompareTag("Laser")) {
@@ -49,6 +68,7 @@ public class Enemy : MonoBehaviour {
             _enemyAnimator.SetTrigger("OnEnemyDeath");
             _speedOfEnemy = 0f;
             gameObject.GetComponent<Collider2D>().enabled = false;
+            _audioSource.Play();
             Destroy(gameObject, 2.5f);
         }
     }

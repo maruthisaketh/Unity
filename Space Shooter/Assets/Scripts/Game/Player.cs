@@ -20,6 +20,12 @@ public class Player : MonoBehaviour {
     private GameObject _shieldVisualizer;
 
     [SerializeField]
+    private GameObject _leftEngineFire;
+
+    [SerializeField]
+    private GameObject _rightEngineFire;
+
+    [SerializeField]
     private float _fireRate = 0.15f;
     private float _nextFireTime = 0.0f;
     [SerializeField]
@@ -32,6 +38,10 @@ public class Player : MonoBehaviour {
     private bool _isShieldPowerupActive = false;
     private int _score = 0;
 
+    private Animator _animator;
+    private AudioSource _audioSource;
+    private AudioClip _laserAudio, _explosionAudio;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -40,11 +50,31 @@ public class Player : MonoBehaviour {
 
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _animator = gameObject.GetComponent<Animator>();
+        _audioSource = gameObject.GetComponent<AudioSource>();
+        _laserAudio = Resources.Load("Audio/laser_shot") as AudioClip;
+        _explosionAudio = Resources.Load("Audio/explosion_sound") as AudioClip;
+
         if (_spawnManager == null) {
-            Debug.LogError("The Spawn Manager is Null");
+            Debug.LogError("Player::Start() - The Spawn Manager is Not found");
         }
         if (_uiManager == null) {
-            Debug.LogError("The UI Manager is Null");
+            Debug.LogError("Player::Start() - The UI Manager is Not found");
+        }
+        if (_animator == null) {
+            Debug.LogError("Player::Start() - Animator for the Player is Not found");
+        }
+        if (_audioSource == null) {
+            Debug.LogError("Player.cs::Start() - Audio source for Player is Not Found");
+        }
+        if (_laserAudio != null) {
+            _audioSource.clip = _laserAudio;
+        }
+        else {
+            Debug.LogError("Player.cs::Start() - Laser Audio Not Found");
+        }
+        if (_explosionAudio == null) {
+            Debug.LogError("Player.cs::Start() - Explosion Sound Not Found.");
         }
     }
 
@@ -66,6 +96,7 @@ public class Player : MonoBehaviour {
         else {
             Instantiate(_laserPrefab, transform.position + laserOffset, Quaternion.identity);
         }
+        _audioSource.Play();
     }
 
     void CalculateMovement() {
@@ -81,6 +112,23 @@ public class Player : MonoBehaviour {
         }
         else {
             transform.Translate(_speedOfPlayer * Time.deltaTime * direction);
+        }
+
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKeyDown(KeyCode.A)) {
+            _animator.SetBool("OnLeft", true);
+            _animator.SetBool("OnRight", false);
+        }
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.D)) {
+            _animator.SetBool("OnRight", true);
+            _animator.SetBool("OnLeft", false);
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A)) {
+            _animator.SetBool("OnLeft", false);
+            _animator.SetBool("OnRight", false);
+        }
+        else if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) {
+            _animator.SetBool("OnRight", false);
+            _animator.SetBool("OnLeft", false);
         }
 
         //Restraining Player movement in Vertical Direction
@@ -102,15 +150,27 @@ public class Player : MonoBehaviour {
             _isShieldPowerupActive = false;
             return;
         }
-        
+
         _lives--;
+
+        if (_lives == 2) {
+            _leftEngineFire.SetActive(true);
+        }
+        if (_lives == 1) {
+            _rightEngineFire.SetActive(true);
+        }
+
         _uiManager.UpdateLivesImg(_lives);
 
         if (_lives < 1) {
             //Stop Spawning Enemies and Destroy Player.
             _spawnManager.OnPlayerDeath();
+            _leftEngineFire.SetActive(false);
+            _rightEngineFire.SetActive(false);
+            _audioSource.clip = _explosionAudio;
+            _audioSource.Play();
             Destroy(gameObject);
-        } 
+        }
     }
 
     public void ActivateTripleShot() {
@@ -140,6 +200,6 @@ public class Player : MonoBehaviour {
     public void AddScore(int points) {
         _score += points;
         _uiManager.UpdateScore(_score);
-    }    
+    }
 
 }

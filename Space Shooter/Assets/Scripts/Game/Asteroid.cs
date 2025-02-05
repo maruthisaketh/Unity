@@ -12,11 +12,16 @@ public class Asteroid : MonoBehaviour
 
     private Player _player;
 
+    private AudioClip _explosionAudio;
+    private AudioSource _audioSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _asteroidAnimator = GetComponent<Animator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
+        _audioSource = gameObject.GetComponent<AudioSource>();
+        _explosionAudio = Resources.Load<AudioClip>("Audio/explosion_sound");
 
         if (_asteroidAnimator == null) {
             Debug.LogError("Asteroid.cs::Start() - Asteroid Animator component Not found");
@@ -24,6 +29,17 @@ public class Asteroid : MonoBehaviour
 
         if(_player == null) {
             Debug.LogError("Asteroid.cs::Start() - Player Component Not Found");
+        }
+
+        if (_explosionAudio == null) {
+            Debug.LogError("Asteriod.cs::Start() - Explosion Sound Not Found");
+        }
+
+        if (_audioSource == null) {
+            Debug.LogError("Asteroid.cs::Start() - Audio Source component for Asteroid Not Found");
+        }
+        else {
+            _audioSource.clip = _explosionAudio;
         }
 
     }
@@ -52,6 +68,7 @@ public class Asteroid : MonoBehaviour
             _asteroidAnimator.SetTrigger("OnAsteroidExplosion");
             _asteroidSpeed = 0f;
             gameObject.GetComponent<Collider2D>().enabled = false;
+            _audioSource.Play();
             Destroy(this.gameObject, 2.5f);
         }
         if (other.gameObject.CompareTag("Laser")) {
@@ -60,6 +77,7 @@ public class Asteroid : MonoBehaviour
             _asteroidAnimator.SetTrigger("OnAsteroidExplosion");
             _asteroidSpeed = 0f;
             gameObject.GetComponent<Collider2D>().enabled = false;
+            _audioSource.Play();
             Destroy(this.gameObject,2.5f);
         }
     }

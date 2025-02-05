@@ -13,9 +13,14 @@ public class Powerup : MonoBehaviour {
     [SerializeField]
     private int _powerupID = 0;
 
+    private AudioClip _powerupClip;
+
+    [SerializeField]
+    private float _volume = 2.0f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-
+        _powerupClip = Resources.Load<AudioClip>("Audio/power_up_sound");
     }
 
     // Update is called once per frame
@@ -30,6 +35,7 @@ public class Powerup : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Player")) {
             Player player = other.gameObject.GetComponent<Player>();
+            AudioSource.PlayClipAtPoint(_powerupClip, transform.position, _volume);
             if (player != null) {
                 switch (_powerupID) {
                     case 0: player.ActivateTripleShot(); break;
