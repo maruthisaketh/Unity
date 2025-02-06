@@ -2,14 +2,22 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
     [SerializeField]
-    private float _speedOfEnemy = 4.0f;
+    private float _speedOfEnemy = 3.5f;
     private Player _player;
 
     [SerializeField]
     private GameObject _enemyLaserPrefab;
+    [SerializeField]
+    private float _fireRate = 3.0f;
+    private float _canFire = -1.0f;
+
+
     private Animator _enemyAnimator;
     private AudioSource _audioSource;
     private AudioClip _explosionAudio;
+    private bool _isEnemyAlive = true;
+
+    private Vector3 _laserOffset = new Vector3(0, 0.1f, 0);
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -40,6 +48,19 @@ public class Enemy : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        CalculateMovement();
+        if (Time.time > _canFire && _isEnemyAlive) {
+            _fireRate = Random.Range(3.0f, 7.0f);
+            _canFire = Time.time + _fireRate;
+            GameObject enemyLaser = Instantiate(_enemyLaserPrefab, transform.position + _laserOffset, Quaternion.identity) as GameObject;
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            for (int i = 0; i < lasers.Length; i++) {
+                lasers[i].AssignEnemyLaser();
+            }
+        }
+    }
+
+    private void CalculateMovement() {
         transform.Translate(_speedOfEnemy * Time.deltaTime * Vector3.down);
 
         if (transform.position.y < -5.0f) {
@@ -49,6 +70,7 @@ public class Enemy : MonoBehaviour {
     }
 
     public void OnTriggerEnter2D(Collider2D other) {
+        _isEnemyAlive = false;
         if (other.CompareTag("Player")) {
             Player player = other.GetComponent<Player>();
             if (player != null) {
@@ -61,15 +83,20 @@ public class Enemy : MonoBehaviour {
             Destroy(gameObject, 2.5f);
         }
         else if (other.CompareTag("Laser")) {
-            if (_player != null) {
-                _player.AddScore(10);
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null) {
+                if (laser.IsEnemyLaser() == false) {
+                    if (_player != null) {
+                        _player.AddScore(10);
+                    }
+                    Destroy(other.gameObject);
+                    _enemyAnimator.SetTrigger("OnEnemyDeath");
+                    _speedOfEnemy = 0f;
+                    gameObject.GetComponent<Collider2D>().enabled = false;
+                    _audioSource.Play();
+                    Destroy(gameObject, 2.5f);
+                }
             }
-            Destroy(other.gameObject);
-            _enemyAnimator.SetTrigger("OnEnemyDeath");
-            _speedOfEnemy = 0f;
-            gameObject.GetComponent<Collider2D>().enabled = false;
-            _audioSource.Play();
-            Destroy(gameObject, 2.5f);
         }
     }
 }

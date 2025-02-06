@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour {
     //public or private references
@@ -24,9 +25,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField]
     private GameObject _rightEngineFire;
-
-    [SerializeField]
-    private float _fireRate = 0.15f;
+    private float _fireRate = 0.4f;
     private float _nextFireTime = 0.0f;
     [SerializeField]
     private int _lives = 3;
@@ -41,7 +40,18 @@ public class Player : MonoBehaviour {
     private Animator _animator;
     private AudioSource _audioSource;
     private AudioClip _laserAudio, _explosionAudio;
+    private PlayerInput _playerInput;
 
+    private InputAction _moveInput, _fireInput;
+
+    private void Awake() {
+        _playerInput = GetComponent<PlayerInput>();
+        _moveInput = _playerInput.actions["Move"];
+        _fireInput = _playerInput.actions["Attack"];
+        if (_playerInput == null) {
+            Debug.LogError("Player.cs::Awake() - Player Input Not found.");
+        }
+    }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -81,7 +91,8 @@ public class Player : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         CalculateMovement();
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFireTime) {
+        Debug.Log("" + _fireInput.IsPressed());
+        if (_fireInput.IsPressed() && Time.time > _nextFireTime) {
             ShootLaser();
         }
     }
@@ -101,8 +112,13 @@ public class Player : MonoBehaviour {
 
     void CalculateMovement() {
         //Get the value of the direction which the player wants to move
-        _horizontalInput = Input.GetAxis("Horizontal");
-        _verticalInput = Input.GetAxis("Vertical");
+        //Debug.Log("" + _moveInput.ReadValue<Vector2>());
+
+        //_horizontalInput = Input.GetAxis("Horizontal");
+        //_verticalInput = Input.GetAxis("Vertical");
+
+        _horizontalInput = _moveInput.ReadValue<Vector2>().x;
+        _verticalInput = _moveInput.ReadValue<Vector2>().y;
 
         //get direction of movement
         Vector3 direction = new(_horizontalInput, _verticalInput, 0);
@@ -114,22 +130,8 @@ public class Player : MonoBehaviour {
             transform.Translate(_speedOfPlayer * Time.deltaTime * direction);
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKeyDown(KeyCode.A)) {
-            _animator.SetBool("OnLeft", true);
-            _animator.SetBool("OnRight", false);
-        }
-        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.D)) {
-            _animator.SetBool("OnRight", true);
-            _animator.SetBool("OnLeft", false);
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A)) {
-            _animator.SetBool("OnLeft", false);
-            _animator.SetBool("OnRight", false);
-        }
-        else if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) {
-            _animator.SetBool("OnRight", false);
-            _animator.SetBool("OnLeft", false);
-        }
+        //Handle Animations
+        HandleAnimations(direction);
 
         //Restraining Player movement in Vertical Direction
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.0f, 0), transform.position.z);
@@ -140,6 +142,21 @@ public class Player : MonoBehaviour {
         }
         else if (transform.position.x < -11.3f) {
             transform.position = new Vector3(11.3f, transform.position.y, transform.position.z);
+        }
+    }
+
+    private void HandleAnimations(Vector3 direction) {
+        if (direction.x < 0) {
+            _animator.SetBool("OnLeft", true);
+            _animator.SetBool("OnRight", false);
+        }
+        else if (direction.x > 0) {
+            _animator.SetBool("OnRight", true);
+            _animator.SetBool("OnLeft", false);
+        }
+        else {
+            _animator.SetBool("OnRight", false);
+            _animator.SetBool("OnLeft", false);
         }
     }
 

@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class Asteroid : MonoBehaviour
-{
+public class Asteroid : MonoBehaviour {
     [SerializeField]
     private float _rotationSpeed = 30.0f;
 
@@ -16,8 +15,7 @@ public class Asteroid : MonoBehaviour
     private AudioSource _audioSource;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    void Start() {
         _asteroidAnimator = GetComponent<Animator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         _audioSource = gameObject.GetComponent<AudioSource>();
@@ -27,7 +25,7 @@ public class Asteroid : MonoBehaviour
             Debug.LogError("Asteroid.cs::Start() - Asteroid Animator component Not found");
         }
 
-        if(_player == null) {
+        if (_player == null) {
             Debug.LogError("Asteroid.cs::Start() - Player Component Not Found");
         }
 
@@ -45,8 +43,7 @@ public class Asteroid : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         transform.Translate(_asteroidSpeed * Time.deltaTime * Vector3.down, Space.World);
         transform.Rotate(_rotationSpeed * Time.deltaTime * Vector3.back, Space.Self);
 
@@ -72,13 +69,18 @@ public class Asteroid : MonoBehaviour
             Destroy(this.gameObject, 2.5f);
         }
         if (other.gameObject.CompareTag("Laser")) {
-            _player.AddScore(5);
-            Destroy(other.gameObject);
-            _asteroidAnimator.SetTrigger("OnAsteroidExplosion");
-            _asteroidSpeed = 0f;
-            gameObject.GetComponent<Collider2D>().enabled = false;
-            _audioSource.Play();
-            Destroy(this.gameObject,2.5f);
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null) {
+                if (laser.IsEnemyLaser() == false) {
+                    _player.AddScore(5);
+                    Destroy(other.gameObject);
+                    _asteroidAnimator.SetTrigger("OnAsteroidExplosion");
+                    _asteroidSpeed = 0f;
+                    gameObject.GetComponent<Collider2D>().enabled = false;
+                    _audioSource.Play();
+                    Destroy(this.gameObject, 2.5f);
+                }
+            }
         }
     }
 }
