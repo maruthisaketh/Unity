@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
     {
         _isPlayerAlive = false;
         PlayerPrefs.SetInt("highscore", _highscore);
-        Debug.Log("HighScore Saved");
         SceneManager.LoadScene("Main_Menu");
     }
 
@@ -59,11 +58,7 @@ public class GameManager : MonoBehaviour
             _scoreText.text = _score.ToString();
             if (_score > _highscore) {
                 _highscore = _score;
-                Debug.Log("Highscore: " + _highscore.ToString());
             }
-        }
-        if (_isPlayerAlive == false) {
-            
         }
     }
 }

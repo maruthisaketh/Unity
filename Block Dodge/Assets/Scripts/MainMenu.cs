@@ -6,6 +6,7 @@ public class MainMenu : MonoBehaviour
 {
     private int _highscore;
     private TextMeshProUGUI _highscoreText;
+    private bool _startGame = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,8 +21,10 @@ public class MainMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButtonDown(0) && _startGame) { 
             SceneManager.LoadScene("Game");
+        } else {
+            _startGame = true;
         }
     }
 }
