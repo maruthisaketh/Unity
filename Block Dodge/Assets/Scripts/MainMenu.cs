@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -14,7 +13,7 @@ public class MainMenu : MonoBehaviour
         if (_highscoreText == null) {
             Debug.LogError("MainMenu.cs::Start() - HighScore Text Component Not Found.");
         }
-        _highscore = PlayerPrefs.GetInt("highscore", _highscore);
+        _highscore = PlayerPrefs.GetInt("highscore", 0);
         _highscoreText.text = "High Score: " + _highscore.ToString();
     }
 

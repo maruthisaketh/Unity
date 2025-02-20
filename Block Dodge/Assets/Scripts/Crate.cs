@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Crate : MonoBehaviour
 {
@@ -32,7 +31,6 @@ public class Crate : MonoBehaviour
             }
             Destroy(collision.gameObject);
             Destroy(this.gameObject);
-            SceneManager.LoadScene("Main_Menu");
         } 
     }
 }

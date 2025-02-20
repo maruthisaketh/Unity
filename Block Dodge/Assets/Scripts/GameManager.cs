@@ -1,7 +1,7 @@
 using System.Collections;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         }
         _scoreText = GameObject.Find("ScoreText").GetComponent<TextMeshProUGUI>();
         StartCoroutine(SpawnCrates());
-        _highscore = PlayerPrefs.GetInt("highscore", _highscore);
+        _highscore = PlayerPrefs.GetInt("highscore", 0);
     }
 
     void Update()
@@ -46,20 +46,24 @@ public class GameManager : MonoBehaviour
     public void PlayerDead()
     {
         _isPlayerAlive = false;
+        PlayerPrefs.SetInt("highscore", _highscore);
+        Debug.Log("HighScore Saved");
+        SceneManager.LoadScene("Main_Menu");
     }
 
     public void UpdateScore()
     {
-        if (_isPlayerAlive)
+        if (_isPlayerAlive == true)
         {
             _score++;
             _scoreText.text = _score.ToString();
             if (_score > _highscore) {
                 _highscore = _score;
+                Debug.Log("Highscore: " + _highscore.ToString());
             }
         }
-        if (!_isPlayerAlive) {
-            PlayerPrefs.SetInt("highscore", _highscore);
+        if (_isPlayerAlive == false) {
+            
         }
     }
 }
