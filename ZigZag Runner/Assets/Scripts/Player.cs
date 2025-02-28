@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
 
     private void Awake() {
         _rigidbody = GetComponent<Rigidbody>();
+        if (_rigidbody == null) {
+            Debug.LogError("Player.cs::Awake() - RigidBody Component Not Found.");
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -29,6 +32,7 @@ public class Player : MonoBehaviour
 
         if(!Physics.Raycast(transform.position, Vector3.down, 1.2f)) {
             _gameOver = true;
+            Camera.main.GetComponent<CameraSmoothFollow>().GameOver();
             _rigidbody.linearVelocity = Physics.gravity;
         }
 
@@ -43,5 +47,9 @@ public class Player : MonoBehaviour
         } else if (_rigidbody.linearVelocity.x > 0) {
             _rigidbody.linearVelocity = new(0, 0, _speedOfPlayer);
         }
+    }
+
+    private void OnBecameInvisible() {
+        Destroy(gameObject);
     }
 }
