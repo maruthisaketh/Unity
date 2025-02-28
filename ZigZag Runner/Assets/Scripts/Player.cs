@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]
-    private float _speedOfPlayer = 4.5f;
-
+    [SerializeField] private float _speedOfPlayer = 5.0f;
     private Rigidbody _rigidbody;
     private bool _gameStarted = false;
     private bool _gameOver = false;
+    private Camera _camera;
+    private SpawnManager _spawnManager;
 
     private void Awake() {
         _rigidbody = GetComponent<Rigidbody>();
@@ -19,7 +19,15 @@ public class Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _camera = Camera.main;
+        if (_camera == null) {
+            Debug.LogError("Player.cs::Start() - Main Camera Object Not Found");
+        }
+
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        if (_spawnManager == null) {
+            Debug.LogError("Player.cs()::SpawnManager Commponent Not Found");
+        }
     }
 
     // Update is called once per frame
@@ -32,7 +40,8 @@ public class Player : MonoBehaviour
 
         if(!Physics.Raycast(transform.position, Vector3.down, 1.2f)) {
             _gameOver = true;
-            Camera.main.GetComponent<CameraSmoothFollow>().GameOver();
+            _camera.GetComponent<CameraSmoothFollow>().GameOver();
+            _spawnManager.GameOver();
             _rigidbody.linearVelocity = Physics.gravity;
         }
 
