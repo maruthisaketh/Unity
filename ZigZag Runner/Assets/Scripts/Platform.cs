@@ -8,11 +8,7 @@ public class Platform : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             gameObject.GetComponent<Rigidbody>().useGravity = true;
+            Destroy(gameObject, 2.0f);
         }
-    }
-
-    private void OnBecameInvisible()
-    {
-        Destroy(gameObject);
     }
 }
