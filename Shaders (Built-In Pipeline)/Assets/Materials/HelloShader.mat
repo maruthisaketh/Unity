@@ -83,7 +83,7 @@ Material:
     - _Color: {r: 0.091, g: 0, b: 0.68275833, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _myColor: {r: 1, g: 1, b: 1, a: 1}
-    - _myEmission: {r: 0, g: 0.03938818, b: 1, a: 1}
-    - _myNormal: {r: 0.2988163, g: 0.31854475, b: 0.8018868, a: 1}
+    - _myEmission: {r: 0.16037738, g: 0, b: 0.048173964, a: 1}
+    - _myNormal: {r: 0.9150943, g: 0, b: 0.31202236, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
