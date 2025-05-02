@@ -37,5 +37,9 @@ public class AsteroidMovement : MonoBehaviour
         transform.Translate(_asteroidDirection * _asteroidSpeed * Time.deltaTime, Space.World);
 
         transform.Rotate(_rotationalSpeed * Time.deltaTime * Vector3.up, Space.Self);
+
+        if (transform.position.x < -100.0f) {
+            Destroy(this.gameObject);
+        }
     }
 }
